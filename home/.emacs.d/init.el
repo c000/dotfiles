@@ -33,6 +33,9 @@
  ;; If there is more than one, they won't work right.
  )
 
+(require 'recentf)
+(recentf-mode 1)
+
 (require 'evil)
 (evil-mode 1)
 
@@ -40,15 +43,17 @@
 (global-linum-mode)
 (setq-default indicate-empty-lines t
               indent-tabs-mode nil)
-(setq require-final-newline t
+(setq inhibit-splash-screen  t
+      require-final-newline t
       scroll-conservatively 4
       scroll-margin 16
-      tab-width 4)
-
+      tab-width 4
+      visible-bell t)
 
 (require 'ivy)
 (ivy-mode t)
-(setq ivy-height 40)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-height 20)
 
 (counsel-mode t)
 
@@ -67,5 +72,6 @@
 (add-hook 'go-mode-hook 'company-mode)
 (add-hook 'go-mode-hook (lambda ()
                           (add-hook 'before-save-hook 'gofmt-before-save)
+                          (setq tab-width 4)
                           (set (make-local-variable 'company-backends) '(company-go))))
 
