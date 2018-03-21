@@ -39,6 +39,8 @@
 (show-paren-mode)
 (global-linum-mode)
 (setq-default indicate-empty-lines t)
+(setq scroll-conservatively 4
+      scroll-margin 16)
 
 
 (require 'ivy)
