@@ -1,24 +1,24 @@
 (if window-system (progn
-		    (global-set-key (kbd "C-x C-c") 'kill-this-buffer)
+                    (global-set-key (kbd "C-x C-c") 'kill-this-buffer)
 
-		    (load-theme 'tango-dark)
+                    (load-theme 'tango-dark)
 
-		    (menu-bar-mode 0)
-		    (tool-bar-mode 0)
-		    (scroll-bar-mode 0)
+                    (menu-bar-mode 0)
+                    (tool-bar-mode 0)
+                    (scroll-bar-mode 0)
 
-		    (create-fontset-from-ascii-font
-		    "DejaVu Sans Mono-9"
-		    nil
-		    "DejaVu")
+                    (create-fontset-from-ascii-font
+                    "DejaVu Sans Mono-9"
+                    nil
+                    "DejaVu")
 
-		    (add-to-list 'default-frame-alist
-				'(font . "fontset-DejaVu"))
+                    (add-to-list 'default-frame-alist
+                                '(font . "fontset-DejaVu"))
 ))
 
 (require 'package)
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/"))
+             '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -38,9 +38,12 @@
 
 (show-paren-mode)
 (global-linum-mode)
-(setq-default indicate-empty-lines t)
-(setq scroll-conservatively 4
-      scroll-margin 16)
+(setq-default indicate-empty-lines t
+              indent-tabs-mode nil)
+(setq require-final-newline t
+      scroll-conservatively 4
+      scroll-margin 16
+      tab-width 4)
 
 
 (require 'ivy)
@@ -51,3 +54,18 @@
 
 (require 'company)
 (global-company-mode)
+
+(require 'whitespace)
+(setq whitespace-style '(face tabs tab-mark))
+(setcar (nthcdr 2 (assq 'tab-mark whitespace-display-mappings)) [?^ ?\t])
+(global-whitespace-mode)
+
+(add-to-list 'exec-path (expand-file-name "~/go/bin"))
+(require 'go-mode)
+(require 'company-go)
+
+(add-hook 'go-mode-hook 'company-mode)
+(add-hook 'go-mode-hook (lambda ()
+                          (add-hook 'before-save-hook 'gofmt-before-save)
+                          (set (make-local-variable 'company-backends) '(company-go))))
+
