@@ -8,9 +8,16 @@
                     (scroll-bar-mode 0)
 
                     (create-fontset-from-ascii-font
-                    "DejaVu Sans Mono-9"
+                    "DejaVu Sans Mono-12"
                     nil
                     "DejaVu")
+
+                    (set-fontset-font
+                     "fontset-DejaVu"
+                     'unicode
+                     "MyricaM M-12"
+                     nil
+                     'append)
 
                     (add-to-list 'default-frame-alist
                                 '(font . "fontset-DejaVu"))
@@ -25,13 +32,34 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (company counsel evil))))
+ '(counsel-projectile-mode t nil (counsel-projectile))
+ '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
+ '(package-selected-packages
+   (quote
+    (magit counsel-projectile projectile flycheck wgrep rg ace-jump-mode company counsel evil))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(let '(my/packages '(
+                     ace-jump-mode
+                     company
+                     counsel
+                     evil
+                     flycheck
+                     rg
+                     wgrep
+                     company-go
+                     projectile
+                     counsel-projectile
+                     magit
+                     ))
+  (dolist (package my/packages)
+    (unless (package-installed-p package)
+      (package-install package))))
 
 (require 'recentf)
 (recentf-mode 1)
@@ -58,6 +86,11 @@
 
 (counsel-mode t)
 
+(require 'rg)
+(add-hook 'rg-mode-hook 'wgrep-ag-setup)
+(setq wgrep-auto-save-buffer t)
+
+
 (require 'company)
 (global-company-mode)
 
@@ -71,8 +104,9 @@
 (require 'company-go)
 
 (add-hook 'go-mode-hook 'company-mode)
+(add-hook 'go-mode-hook 'flycheck-mode)
 (add-hook 'go-mode-hook (lambda ()
                           (add-hook 'before-save-hook 'gofmt-before-save)
                           (setq tab-width 4)
+                          (setq gofmt-command "goimports")
                           (set (make-local-variable 'company-backends) '(company-go))))
-
