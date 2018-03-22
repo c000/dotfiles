@@ -76,3 +76,5 @@
                           (setq tab-width 4)
                           (set (make-local-variable 'company-backends) '(company-go))))
 
+
+(intero-global-mode t)
