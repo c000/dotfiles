@@ -38,6 +38,7 @@
 
 (require 'evil)
 (evil-mode 1)
+(define-key evil-normal-state-map (kbd "s") 'avy-goto-char-timer)
 
 (show-paren-mode)
 (global-linum-mode)
