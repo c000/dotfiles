@@ -77,7 +77,8 @@
       scroll-conservatively 4
       scroll-margin 16
       tab-width 4
-      visible-bell t)
+      visible-bell t
+      dired-dwim-target t)
 
 (require 'ivy)
 (ivy-mode t)
