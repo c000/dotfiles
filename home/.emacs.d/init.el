@@ -8,7 +8,7 @@
                     (scroll-bar-mode 0)
 
                     (create-fontset-from-ascii-font
-                    "DejaVu Sans Mono-12"
+                    "DejaVu Sans Mono-12:weight=normal:slant=normal"
                     nil
                     "DejaVu")
 
