@@ -1,27 +1,27 @@
-(if window-system (progn
-                    (global-set-key (kbd "C-x C-c") 'kill-this-buffer)
+(load-theme 'wheatgrass)
+(if window-system
+    (progn
+      (global-set-key (kbd "C-x C-c") 'kill-this-buffer)
 
-                    (load-theme 'tango-dark)
 
-                    (menu-bar-mode 0)
-                    (tool-bar-mode 0)
-                    (scroll-bar-mode 0)
+      (menu-bar-mode 0)
+      (tool-bar-mode 0)
+      (scroll-bar-mode 0)
 
-                    (create-fontset-from-ascii-font
-                    "DejaVu Sans Mono-12:weight=normal:slant=normal"
-                    nil
-                    "DejaVu")
+      (create-fontset-from-ascii-font
+       "DejaVu Sans Mono-12:weight=normal:slant=normal"
+       nil
+       "DejaVu")
 
-                    (set-fontset-font
-                     "fontset-DejaVu"
-                     'unicode
-                     "MyricaM M-12"
-                     nil
-                     'append)
+      (set-fontset-font
+       "fontset-DejaVu"
+       'unicode
+       "MyricaM M-12"
+       nil
+       'append)
 
-                    (add-to-list 'default-frame-alist
-                                '(font . "fontset-DejaVu"))
-))
+      (add-to-list 'default-frame-alist
+                   '(font . "fontset-DejaVu"))))
 
 (require 'package)
 (add-to-list 'package-archives
