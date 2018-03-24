@@ -1,3 +1,8 @@
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.org/packages/"))
+(package-initialize)
+
 (load-theme 'wheatgrass)
 (if window-system
     (progn
@@ -23,10 +28,6 @@
       (add-to-list 'default-frame-alist
                    '(font . "fontset-DejaVu"))))
 
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/"))
-(package-initialize)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
