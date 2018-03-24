@@ -1,9 +1,14 @@
+(let ((path (expand-file-name "custom.el" user-emacs-directory)))
+  (setq custom-file path)
+  (ignore-errors
+    (load path)))
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 
 (load-theme 'wheatgrass)
+
 (if window-system
     (progn
       (global-set-key (kbd "C-x C-c") 'kill-this-buffer)
@@ -27,27 +32,6 @@
 
       (add-to-list 'default-frame-alist
                    '(font . "fontset-DejaVu"))))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(avy-keys "abcdefghijklmnopqrstuvwxyz")
- '(company-search-regexp-function (quote company-search-flex-regexp))
- '(company-selection-wrap-around t)
- '(counsel-projectile-mode t nil (counsel-projectile))
- '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
- '(package-selected-packages
-   (quote
-    (yafolding avy magit counsel-projectile projectile flycheck wgrep rg ace-jump-mode company counsel evil)))
- '(truncate-lines t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 (let '(my/packages '(
                      ace-jump-mode
