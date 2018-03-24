@@ -32,11 +32,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(avy-keys "abcdefghijklmnopqrstuvwxyz")
+ '(company-search-regexp-function (quote company-search-flex-regexp))
+ '(company-selection-wrap-around t)
  '(counsel-projectile-mode t nil (counsel-projectile))
  '(magit-log-arguments (quote ("--graph" "--color" "--decorate" "-n256")))
  '(package-selected-packages
    (quote
-    (magit counsel-projectile projectile flycheck wgrep rg ace-jump-mode company counsel evil))))
+    (yafolding avy magit counsel-projectile projectile flycheck wgrep rg ace-jump-mode company counsel evil)))
+ '(truncate-lines t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -56,6 +60,7 @@
                      projectile
                      counsel-projectile
                      magit
+                     avy
                      ))
   (dolist (package my/packages)
     (unless (package-installed-p package)
@@ -67,6 +72,10 @@
 (require 'evil)
 (evil-mode 1)
 (define-key evil-normal-state-map (kbd "s") 'avy-goto-char-timer)
+(define-key evil-window-map "\C-h" 'evil-window-left)
+(define-key evil-window-map "\C-j" 'evil-window-down)
+(define-key evil-window-map "\C-k" 'evil-window-up)
+(define-key evil-window-map "\C-l" 'evil-window-right)
 
 (show-paren-mode)
 (global-linum-mode)
@@ -76,9 +85,12 @@
       require-final-newline t
       scroll-conservatively 4
       scroll-margin 16
+      default-tab-width 4
       tab-width 4
+      indent-line-function 'indent-to-left-margin
       visible-bell t
-      dired-dwim-target t)
+      dired-dwim-target t
+      split-width-threshold nil)
 
 (require 'ivy)
 (ivy-mode t)
@@ -86,6 +98,12 @@
 (setq ivy-height 20)
 
 (counsel-mode t)
+(setq counsel-find-file-ignore-regexp "~$")
+(defun isearch-forward-or-swiper (use-swiper)
+  (interactive "P")
+  (call-interactively (if use-swiper 'swiper 'isearch-forward)))
+(global-set-key (kbd "C-s") 'isearch-forward-or-swiper)
+(global-set-key (kbd "M-TAB") 'company-complete)
 
 (require 'rg)
 (add-hook 'rg-mode-hook 'wgrep-ag-setup)
