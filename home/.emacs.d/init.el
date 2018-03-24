@@ -8,6 +8,20 @@
 (package-initialize)
 
 (load-theme 'wheatgrass)
+(show-paren-mode)
+(global-linum-mode)
+(setq-default indicate-empty-lines t
+              indent-tabs-mode nil)
+(setq inhibit-splash-screen  t
+      require-final-newline t
+      scroll-conservatively 4
+      scroll-margin 16
+      default-tab-width 4
+      tab-width 4
+      indent-line-function 'indent-to-left-margin
+      visible-bell t
+      dired-dwim-target t
+      split-width-threshold nil)
 
 (if window-system
     (progn
@@ -33,84 +47,117 @@
       (add-to-list 'default-frame-alist
                    '(font . "fontset-DejaVu"))))
 
-(let '(my/packages '(
-                     ace-jump-mode
-                     company
-                     counsel
-                     evil
-                     flycheck
-                     rg
-                     wgrep
-                     company-go
-                     projectile
-                     counsel-projectile
-                     magit
-                     avy
-                     ))
-  (dolist (package my/packages)
-    (unless (package-installed-p package)
-      (package-install package))))
+(let ((package 'use-package))
+  (unless (package-installed-p package)
+    (package-install package)))
 
-(require 'recentf)
-(recentf-mode 1)
+(use-package evil
+  :ensure t
+  :init
+  (evil-mode 1)
+  :bind (:map evil-window-map
+        ("C-h" . 'evil-window-left)
+        ("C-j" . 'evil-window-down)
+        ("C-k" . 'evil-window-up)
+        ("C-l" . 'evil-window-right)))
 
-(require 'evil)
-(evil-mode 1)
-(define-key evil-normal-state-map (kbd "s") 'avy-goto-char-timer)
-(define-key evil-window-map "\C-h" 'evil-window-left)
-(define-key evil-window-map "\C-j" 'evil-window-down)
-(define-key evil-window-map "\C-k" 'evil-window-up)
-(define-key evil-window-map "\C-l" 'evil-window-right)
+(use-package recentf
+  :init
+  (custom-set-variables
+   '(recentf-max-saved-items 1000))
+  (recentf-mode 1))
 
-(show-paren-mode)
-(global-linum-mode)
-(setq-default indicate-empty-lines t
-              indent-tabs-mode nil)
-(setq inhibit-splash-screen  t
-      require-final-newline t
-      scroll-conservatively 4
-      scroll-margin 16
-      default-tab-width 4
-      tab-width 4
-      indent-line-function 'indent-to-left-margin
-      visible-bell t
-      dired-dwim-target t
-      split-width-threshold nil)
+(use-package ivy
+  :ensure t
+  :defer t
+  :config
+  (ivy-mode t)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-height 20))
 
-(require 'ivy)
-(ivy-mode t)
-(setq ivy-use-virtual-buffers t)
-(setq ivy-height 20)
+(use-package counsel
+  :ensure t
+  :defer t
+  :init
+  (counsel-mode t)
+  (setq counsel-find-file-ignore-regexp "~$"))
 
-(counsel-mode t)
-(setq counsel-find-file-ignore-regexp "~$")
-(defun isearch-forward-or-swiper (use-swiper)
-  (interactive "P")
-  (call-interactively (if use-swiper 'swiper 'isearch-forward)))
-(global-set-key (kbd "C-s") 'isearch-forward-or-swiper)
-(global-set-key (kbd "M-TAB") 'company-complete)
+(use-package diff-hl
+  :ensure t
+  :init
+  (global-diff-hl-mode))
 
-(require 'rg)
-(add-hook 'rg-mode-hook 'wgrep-ag-setup)
-(setq wgrep-auto-save-buffer t)
+(use-package avy
+  :ensure t
+  :defer t
+  :bind (:map evil-normal-state-map
+              ("s" . 'avy-goto-char-timer)))
 
+(use-package swiper
+  :ensure t
+  :defer t
+  :init
+  (defun isearch-forward-or-swiper (use-swiper)
+    (interactive "P")
+    (call-interactively (if use-swiper 'swiper 'isearch-forward)))
+  :bind (("C-s" . 'isearch-forward-or-swiper)))
 
-(require 'company)
-(global-company-mode)
+(use-package wgrep
+  :ensure t
+  :defer t
+  :init
+  (setq wgrep-auto-save-buffer t))
 
-(require 'whitespace)
-(setq whitespace-style '(face tabs tab-mark))
-(setcar (nthcdr 2 (assq 'tab-mark whitespace-display-mappings)) [?^ ?\t])
-(global-whitespace-mode)
+(use-package rg
+  :ensure t
+  :defer t
+  :init
+  (add-hook 'rg-mode-hook 'wgrep-ag-setup))
 
-(add-to-list 'exec-path (expand-file-name "~/go/bin"))
-(require 'go-mode)
-(require 'company-go)
+(use-package projectile
+  :ensure t
+  :defer t)
 
-(add-hook 'go-mode-hook 'company-mode)
-(add-hook 'go-mode-hook 'flycheck-mode)
-(add-hook 'go-mode-hook (lambda ()
-                          (add-hook 'before-save-hook 'gofmt-before-save)
-                          (setq tab-width 4)
-                          (setq gofmt-command "goimports")
-                          (set (make-local-variable 'company-backends) '(company-go))))
+(use-package counsel-projectile
+  :ensure t
+  :init
+  (counsel-projectile-mode))
+
+(use-package company
+  :ensure t
+  :defer t
+  :config
+  (global-company-mode)
+  :bind (("M-TAB" . 'company-complete)))
+
+(use-package company-go
+  :ensure t
+  :defer t)
+
+(use-package flycheck
+  :ensure t
+  :defer t)
+
+(use-package go-mode
+  :ensure t
+  :defer t
+  :init
+  (add-to-list 'exec-path (expand-file-name "~/go/bin"))
+  (add-hook 'go-mode-hook 'company-mode)
+  (add-hook 'go-mode-hook 'flycheck-mode)
+  (add-hook 'go-mode-hook (lambda ()
+                            (add-hook 'before-save-hook 'gofmt-before-save)
+                            (setq tab-width 4)
+                            (setq gofmt-command "goimports")
+                            (set (make-local-variable 'company-backends) '(company-go)))))
+
+(use-package whitespace
+  :config
+  (setq whitespace-style '(face tabs tab-mark))
+  (setcar (nthcdr 2 (assq 'tab-mark whitespace-display-mappings)) [?^ ?\t])
+  (global-whitespace-mode))
+
+(use-package magit
+  :ensure t
+  :defer t)
+
