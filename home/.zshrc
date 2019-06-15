@@ -87,4 +87,6 @@ if { which "fzf" > /dev/null }; then
   bindkey '^r' __fzf::history
 fi
 
-source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+if [[ -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
+  source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+fi
