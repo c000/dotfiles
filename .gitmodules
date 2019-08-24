@@ -1,0 +1,3 @@
+[submodule "repos/fzf"]
+	path = repos/fzf
+	url = https://github.com/junegunn/fzf

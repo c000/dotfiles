@@ -1,0 +1,31 @@
+# https://taskfile.dev
+
+version: '2'
+
+vars:
+  zshrc: "{{.HOME}}/.zshrc_gen"
+  cwd:
+    sh: pwd
+
+tasks:
+  default:
+    cmds:
+      - task: install-fzf
+    silent: true
+
+  install-fzf:
+    desc: install fzf binary
+    dir: fzf
+    cmds:
+      - ./install --bin
+      - task: append-path
+        vars:
+          path: fzf/bin
+
+  append-path:
+    vars:
+      config_line: "PATH={{.cwd}}/{{.path}}:\\$PATH"
+    cmds:
+      - >
+        grep "{{.config_line}}" "{{.zshrc}}" ||
+        echo "{{.config_line}}" >> "{{.zshrc}}"

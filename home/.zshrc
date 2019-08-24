@@ -38,6 +38,9 @@ PROMPT='%K{green}%F{black}%n %m:%~%K{blue}%h%1(j.%%%j.)%0(?..:%?)%K{red}${DOCKER
 
 alias ls='ls --color=auto'
 
+if [[ -f "$HOME/.zshrc_gen" ]]; then
+  . "$HOME/.zshrc_gen"
+fi
 
 # Golang
 if { which "go" > /dev/null }; then
