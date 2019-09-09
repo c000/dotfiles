@@ -40,16 +40,15 @@ alias ls='ls --color=auto'
 
 
 # Golang
+#export GOROOT=~/.go/go1.11.6
+#PATH=$PATH:$GOROOT/bin
 if { which "go" > /dev/null }; then
   export GOPATH=~/go
-  #export GOPATH=/shared/go
   export PATH=$PATH:$GOPATH/bin
 fi
 
 # Haskell
-if { which "stack" > /dev/null }; then
-  export PATH=$PATH:$HOME/.local/bin
-fi
+export PATH=$PATH:$HOME/.local/bin
 
 # Node
 if { which "node" > /dev/null }; then
@@ -87,4 +86,8 @@ if { which "fzf" > /dev/null }; then
   bindkey '^r' __fzf::history
 fi
 
+# Azure cli
+PATH=$PATH:$HOME/bin
+
 source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+eval "$(pyenv init -)"
