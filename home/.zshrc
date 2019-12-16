@@ -40,16 +40,15 @@ alias ls='ls --color=auto'
 
 
 # Golang
+#export GOROOT=~/.go/go1.11.6
+#PATH=$PATH:$GOROOT/bin
 if { which "go" > /dev/null }; then
   export GOPATH=~/go
-  #export GOPATH=/shared/go
   export PATH=$PATH:$GOPATH/bin
 fi
 
 # Haskell
-if { which "stack" > /dev/null }; then
-  export PATH=$PATH:$HOME/.local/bin
-fi
+export PATH=$PATH:$HOME/.local/bin
 
 # Node
 if { which "node" > /dev/null }; then
@@ -92,10 +91,6 @@ if { which "direnv" > /dev/null }; then
   eval "$(direnv hook zsh)"
 fi
 
-if [[ -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
-  source "$HOME/.homesick/repos/homeshick/homeshick.sh"
-fi
-
 if [[ -d "$HOME/.anyenv/bin" ]]; then
   PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
@@ -103,4 +98,11 @@ fi
 
 if [[ -f "$HOME/.poetry/env" ]]; then
   source "$HOME/.poetry/env"
+fi
+
+# Azure cli
+PATH=$PATH:$HOME/bin
+
+if [[ -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
+  source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fi

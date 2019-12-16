@@ -17,8 +17,7 @@
       require-final-newline t
       scroll-conservatively 4
       scroll-margin 16
-      default-tab-width 4
-      tab-width 4
+      default-tab-width 2
       indent-line-function 'indent-to-left-margin
       visible-bell t
       dired-dwim-target t
@@ -96,7 +95,12 @@
    '(evil-flash-delay 180)
    '(evil-move-beyond-eol t)
    '(evil-auto-balance-windows nil)
-   '(evil--jumps-debug t)))
+   '(dabbrev-case-replace nil)))
+
+(use-package which-key
+  :ensure t
+  :defer t
+  :hook (after-nit . which-key-mode))
 
 (use-package undo-tree
   :init
@@ -183,6 +187,13 @@
   :bind (:map my-leader-map
               ("r" . 'counsel-projectile-rg)))
 
+(use-package yasnippet
+  :ensure t
+  :defer t
+  :config
+  (yas-reload-all)
+  :hook (go-mode . yas-minor-mode))
+
 (use-package company
   :ensure t
   :defer t
@@ -198,26 +209,51 @@
          ("C-n" . 'company-select-next)
          ("C-p" . 'company-select-previous)))
 
-(use-package company-go
-  :ensure t
-  :defer t)
-
 (use-package flycheck
   :ensure t
   :defer t)
 
+(use-package lsp-mode
+  :ensure t
+  :defer t)
+
+(use-package lsp-ui
+  :ensure t
+  :defer t
+  :commands lsp-ui-mode
+  :bind (:map my-leader-map
+              ("d" . 'lsp-ui-doc-mode)
+              ("p" . 'lsp-ui-peek-find-references))
+  :config
+  (custom-set-variables
+   '(lsp-ui-sideline-enable nil)))
+
+(use-package company-lsp
+  :after (company)
+  :ensure t
+  :defer t
+  :commands company-lsp
+  :init
+  (push 'company-lsp company-backends))
+
 (use-package go-mode
   :ensure t
   :defer t
+  :hook (go-mode . lsp)
   :init
   (add-to-list 'exec-path (expand-file-name "~/go/bin"))
   (add-hook 'go-mode-hook 'company-mode)
   (add-hook 'go-mode-hook 'flycheck-mode)
   (add-hook 'go-mode-hook (lambda ()
                             (add-hook 'before-save-hook 'gofmt-before-save)
-                            (setq tab-width 4)
+                            (setq tab-width 2)
                             (setq gofmt-command "goimports")
-                            (set (make-local-variable 'company-backends) '(company-go)))))
+                            )))
+
+(use-package go-impl
+  :ensure t
+  :defer t
+  :functions go-impl)
 
 (use-package whitespace
   :config
@@ -281,13 +317,6 @@
 (use-package imenu-list
   :ensure t)
 
-(use-package yasnippet
-  :ensure t
-  :defer t
-  :config
-  (yas-reload-all)
-  :hook (go-mode . yas-minor-mode))
-
 (use-package rust-mode
   :ensure t
   :defer t)
@@ -295,6 +324,11 @@
 (use-package yaml-mode
   :ensure t
   :defer t)
+
+(use-package typescript-mode
+  :ensure t
+  :defer t
+  :hook (typescript-mode . lsp))
 
 (use-package origami
   :ensure t
