@@ -87,6 +87,20 @@ if { which "fzf" > /dev/null }; then
   bindkey '^r' __fzf::history
 fi
 
+# Direnv
+if { which "direnv" > /dev/null }; then
+  eval "$(direnv hook zsh)"
+fi
+
 if [[ -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
   source "$HOME/.homesick/repos/homeshick/homeshick.sh"
+fi
+
+if [[ -d "$HOME/.anyenv/bin" ]]; then
+  PATH="$HOME/.anyenv/bin:$PATH"
+  eval "$(anyenv init -)"
+fi
+
+if [[ -f "$HOME/.poetry/env" ]]; then
+  source "$HOME/.poetry/env"
 fi
