@@ -56,6 +56,9 @@ if { which "node" > /dev/null }; then
 fi
 
 # FZF
+if [[ -f ~/.fzf.zsh ]]; then
+  . ~/.fzf.zsh
+fi
 if { which "fzf" > /dev/null }; then
   export FZF_DEFAULT_OPTS='--height 40% --border --reverse'
   __fzf::cdr() {
