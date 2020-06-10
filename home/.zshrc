@@ -31,6 +31,8 @@ zstyle ':completion:*' format '%K{yellow}%F{black}%d%f%k'
 
 if { which "vim" > /dev/null }; then
   export EDITOR=vim
+elif { which "nvim" > /dev/null }; then
+  export EDITOR=nvim
 fi
 
 setopt prompt_subst
