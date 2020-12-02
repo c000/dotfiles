@@ -89,7 +89,8 @@ if { which "fzf" > /dev/null }; then
     fi
   }
   zle -N __fzf::cdr::zle
-  bindkey '^Gs' __fzf::cdr::zle
+  bindkey '^s' __fzf::cdr::zle
+  stty stop undef
 
   __fzf::history() {
     local s="$(history -n 0 | fzf --tac +s -e -q "${BUFFER}")"
