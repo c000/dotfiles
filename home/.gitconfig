@@ -1,0 +1,9 @@
+[user]
+	name = c000
+	email = c000@users.noreply.github.com
+[push]
+	default = simple
+[alias]
+	l = log --graph --oneline --all
+[pull]
+	ff = only
