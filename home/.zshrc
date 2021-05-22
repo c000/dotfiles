@@ -57,6 +57,11 @@ if { which "node" > /dev/null }; then
   export PATH=$PATH:$HOME/.node_modules/bin
 fi
 
+# Rust
+if [[ -f "$HOME/.cargo/env" ]]; then
+  . "$HOME/.cargo/env"
+fi
+
 # FZF
 if [[ -f ~/.fzf.zsh ]]; then
   . ~/.fzf.zsh
