@@ -51,6 +51,7 @@ fi
 
 # Haskell
 export PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/.cabal/bin
 
 # Node
 if { which "node" > /dev/null }; then
