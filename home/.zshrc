@@ -62,6 +62,11 @@ if [[ -f "$HOME/.cargo/env" ]]; then
   . "$HOME/.cargo/env"
 fi
 
+# Deno
+if [[ -d "$HOME/.deno/bin" ]]; then
+  PATH="$PATH:$HOME/.deno/bin"
+fi
+
 # FZF
 if [[ -f ~/.fzf.zsh ]]; then
   . ~/.fzf.zsh
