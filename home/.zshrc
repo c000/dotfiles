@@ -24,7 +24,7 @@ setopt hist_ignore_space
 # CDR
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
-zstyle ':chpwd:*' recent-dirs-max 100
+zstyle ':chpwd:*' recent-dirs-max 1000
 
 zstyle ':completion:*:default' menu select
 zstyle ':completion:*' matcher-list '' '+m:{a-z}={A-Z}'
