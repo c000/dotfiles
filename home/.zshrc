@@ -40,7 +40,8 @@ setopt prompt_subst
 PROMPT='%K{green}%F{black}%n %m:%~%K{blue}%h%1(j.%%%j.)%0(?..:%?)%K{red}${DOCKER_HOST}%f%k%# '
 
 alias ls='ls --color=auto'
-
+alias -g L='| less'
+export LESS='-R -W -X'
 
 # Golang
 #export GOROOT=~/.go/go1.11.6
