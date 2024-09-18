@@ -3,7 +3,18 @@
 	email = c000@users.noreply.github.com
 [push]
 	default = simple
+	useForceIfIncludes = true
 [alias]
-	l = log --graph --oneline --all
+	l = log --graph --oneline
+	la = log --graph --oneline --all
+	pushf = push --force-with-lease
+	b = show-branch
 [pull]
 	ff = only
+[checkout]
+	guess = true
+[diff]
+	colorMoved = zebra
+	external = difft
+[merge]
+	conflictStyle = diff3
