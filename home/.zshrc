@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/home/sat/.zsh/completions:"* ]]; then export FPATH="/home/sat/.zsh/completions:$FPATH"; fi
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
@@ -41,7 +43,7 @@ PROMPT='%K{green}%F{black}%n %m:%~%K{blue}%h%1(j.%%%j.)%0(?..:%?)%K{red}${DOCKER
 
 alias ls='ls --color=auto'
 alias -g L='| less'
-export LESS='-R -W -X'
+export LESS='-F -R -W -X'
 
 # Golang
 #export GOROOT=~/.go/go1.11.6
@@ -52,6 +54,7 @@ if { which "go" > /dev/null }; then
 fi
 
 # Haskell
+export PATH=$PATH:$HOME/.ghcup/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.cabal/bin
 
@@ -61,6 +64,7 @@ if { which "node" > /dev/null }; then
 fi
 
 # Rust
+export PATH=$PATH:$HOME/.cargo/bin
 if [[ -f "$HOME/.cargo/env" ]]; then
   . "$HOME/.cargo/env"
 fi
