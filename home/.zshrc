@@ -10,9 +10,10 @@ bindkey -e
 zstyle :compinstall filename "$HOME/.zshrc"
 
 autoload -Uz compinit
-autoload -Uz zargs
 compinit
 # End of lines added by compinstall
+
+autoload -Uz zargs
 
 # Histories
 setopt correct
