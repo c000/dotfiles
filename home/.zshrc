@@ -66,6 +66,9 @@ fi
 if [[ -f "$HOME/.cargo/env" ]]; then
   . "$HOME/.cargo/env"
 fi
+if [[ -d "$HOME/.cargo/bin" ]]; then
+  PATH="$PATH:$HOME/.cargo/bin"
+fi
 
 # Deno
 if [[ -d "$HOME/.deno/bin" ]]; then
