@@ -30,10 +30,10 @@ zstyle ':completion:*:default' menu select
 zstyle ':completion:*' matcher-list '' '+m:{a-z}={A-Z}'
 zstyle ':completion:*' format '%K{yellow}%F{black}%d%f%k'
 
-if { which "vim" > /dev/null }; then
-  export EDITOR=vim
-elif { which "nvim" > /dev/null }; then
+if { which "nvim" > /dev/null }; then
   export EDITOR=nvim
+elif { which "vim" > /dev/null }; then
+  export EDITOR=vim
 fi
 
 setopt prompt_subst
