@@ -45,6 +45,11 @@ alias ls='ls --color=auto'
 alias -g L='| less'
 export LESS='-R -W -X'
 
+# Auto ls
+chpwd() {
+  ls
+}
+
 # Golang
 #export GOROOT=~/.go/go1.11.6
 #PATH=$PATH:$GOROOT/bin
