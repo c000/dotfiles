@@ -79,7 +79,7 @@ if { which "fzf" > /dev/null }; then
   export FZF_DEFAULT_OPTS='--height 40% --border --reverse'
   __fzf::cdr() {
     local s="$(cdr -l | perl -pe 's/^[0-9]*\s*//' | fzf +s -e)"
-    [[ -n $s ]] && print "cd $s"
+    [[ -n $s ]] && print "cd ${(q)s}"
   }
   __fzf::cdr::zle() {
     local s="$(__fzf::cdr)"
