@@ -135,3 +135,9 @@ PATH=$PATH:$HOME/bin
 if [[ -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
   source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fi
+
+source ~/.just.zsh
+
+if { which "claude" > /dev/null }; then
+  export CLAUDE_CONFIG_DIR=$HOME/.claude
+fi
