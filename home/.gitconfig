@@ -9,12 +9,20 @@
 	la = log --graph --oneline --all
 	pushf = push --force-with-lease
 	b = show-branch
+	difft = -c diff.external=difft diff
+	logt = -c diff.external=difft log --ext-diff --patch
+	showt = -c diff.external=difft show --ext-diff
 [pull]
 	ff = only
 [checkout]
 	guess = true
 [diff]
 	colorMoved = zebra
-	external = difft
 [merge]
 	conflictStyle = diff3
+[fetch]
+	prune = true
+[diff]
+	tool = nvimdiff
+[difftool "nvimdiff"]
+	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
