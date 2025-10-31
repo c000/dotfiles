@@ -1,0 +1,14 @@
+gui:
+  border: single
+  commitAuthorLongLength: 8
+  nerdFontsVersion: "3"
+  shortTimeFormat: "15:04"
+  showCommandLog: true
+  skipRewordInEditorWarning: true
+  timeFormat: "06-01-02"
+git:
+  autoStageResolvedConflicts: false
+  log:
+    showWholeGraph: false
+refresher:
+  fetchInterval: 3600
