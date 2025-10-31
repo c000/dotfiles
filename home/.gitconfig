@@ -8,7 +8,7 @@
 	l = log --graph --oneline
 	la = log --graph --oneline --all
 	pushf = push --force-with-lease
-	b = show-branch
+	b = show-branch --color=always
 	difft = -c diff.external=difft diff
 	logt = -c diff.external=difft log --ext-diff --patch
 	showt = -c diff.external=difft show --ext-diff
