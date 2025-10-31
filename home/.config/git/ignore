@@ -1,2 +1,9 @@
-.*
 ,*
+
+**/.claude/settings.local.json
+.vscode
+.envrc
+.aider*
+.vim
+.claude
+.direnv
