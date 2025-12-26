@@ -1,0 +1,7 @@
+cursor-style = "block"
+font-family = "Sarasa Term J"
+font-size = 14
+macos-titlebar-style = "hidden"
+# theme = "Kitty Default"
+# theme = "Pro Light"
+theme = "Pencil Light"
