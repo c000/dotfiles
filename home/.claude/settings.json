@@ -1,0 +1,78 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo clippy:*)",
+      "Bash(cargo check:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(cargo fmt:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)",
+      "Bash(cargo build:*)",
+      "Bash(just:*)",
+      "Bash(runn:*)",
+      "Bash(docker compose logs:*)",
+      "Bash(docker logs:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf /)",
+      "Bash(sudo rm -:*)",
+      "Bash(chmod 777 /*)",
+      "Bash(chmod -R 777 /*)",
+      "Bash(dd if=:*)",
+      "Bash(mkfs.:*)",
+      "Bash(fdisk -:*)",
+      "Bash(format -:*)",
+      "Bash(shutdown -:*)",
+      "Bash(reboot -:*)",
+      "Bash(halt -:*)",
+      "Bash(poweroff -:*)",
+      "Bash(killall -:*)",
+      "Bash(pkill -:*)",
+      "Bash(nc -l -:*)",
+      "Bash(ncat -l -:*)",
+      "Bash(netcat -l -:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(rm -rf $HOME:*)",
+      "Bash(rm -rf ~/.ssh*)",
+      "Bash(rm -rf ~/.config*)"
+    ]
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title 'Claude' -message 'Claude has stopped.' -sound Submarine"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title 'Claude' -message 'Claude has stopped.' -sound Submarine"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "alwaysThinkingEnabled": true
+}
