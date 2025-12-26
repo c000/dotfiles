@@ -8,7 +8,7 @@
 	l = log --graph --oneline
 	la = log --graph --oneline --all
 	pushf = push --force-with-lease
-	b = show-branch --color=always
+	b = show-branch --color=always --sparse
 	difft = -c diff.external=difft diff
 	logt = -c diff.external=difft log --ext-diff --patch
 	showt = -c diff.external=difft show --ext-diff
@@ -26,3 +26,7 @@
 	tool = nvimdiff
 [difftool "nvimdiff"]
 	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+[core]
+	quotepath = false
+[include]
+  path = ~/.config/git/config.local
