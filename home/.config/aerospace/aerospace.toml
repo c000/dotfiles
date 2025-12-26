@@ -61,8 +61,8 @@ automatically-unhide-macos-hidden-apps = true
 [gaps]
     inner.horizontal = 8
     inner.vertical =   8
-    outer.left =       [{ monitor."dieabled_U4025QW" = 328 }, 8]
-    outer.bottom =     8
+    outer.left =       [{ monitor."disabled_U4025QW" = 328 }, 8]
+    outer.bottom =     [{ monitor."LG HDR 4K" = 328 }, 8]
     outer.top =        8
     outer.right =      [{ monitor."disabled_U4025QW" = 328 }, 8]
 
