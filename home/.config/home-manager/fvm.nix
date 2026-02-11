@@ -3,6 +3,7 @@
 {
   home.packages = [
     pkgs.cargo
+    pkgs.claude-code
     pkgs.deno
     pkgs.difftastic
     pkgs.neovim
