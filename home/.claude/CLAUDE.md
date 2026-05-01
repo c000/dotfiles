@@ -41,13 +41,16 @@
 - **Reason**: These operations can cause data loss or create conflicts with remote repositories
 - **NO EXCEPTIONS**: Do not make autonomous decisions like "it's during a rebase" or "the fix is needed". Always confirm with the user first
 - **Exception**: Only proceed if the user explicitly instructs (e.g., "continue", "amend it", "proceed")
-- **Exception (TDD Orchestration skill)**: `~/.claude/skills/tdd-orchestration/` の skill が定義する **タスク完了時の autosquash** は user 承認なしで実行してよい。条件:
+- **Exception (TDD Orchestration skill)**: `~/.claude/skills/tdd-orchestration/` の skill が定義する **タスク完了時の整理 (autosquash + commit message 修正)** は user 承認なしで実行してよい。条件:
   - rebase の base は skill が**タスク開始時に記録した HEAD** (`TASK_BASE`) であること
   - `TASK_BASE..HEAD` に含まれる commit が全て自分 (current `git config user.name`) の作成であること
   - `TASK_BASE` が `@{upstream}` の祖先であること (push 済み history を改変しない。upstream 未設定なら check skip)
-  - 実行コマンドは `GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash $TASK_BASE` のみ
+  - 実行コマンドは以下のいずれかに限る:
+    - autosquash: `GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash $TASK_BASE`
+    - HEAD のみ message 修正: `git commit --amend -m "..."` または `git commit --amend -F <msg-file>`
+    - 複数 commit message 一括修正: `GIT_SEQUENCE_EDITOR="cp <todo-file>" git rebase -i $TASK_BASE` (todo-file には `pick` と `exec git commit --amend -F <msg-file>` を組み合わせて記述)
   - 実行後 全体ビルド + 全体テストで verify する
-  - 上記 4 条件を 1 つでも満たさない場合は通常通り user 確認必須
+  - 上記条件を 1 つでも満たさない場合は通常通り user 確認必須
 
 ## Fixup Commits
 - **PREFER**: Use `git commit --fixup` instead of `git commit --amend` for fixing previous commits
