@@ -52,6 +52,12 @@ Conductor は subagent ではない。この skill を読んだ Claude 自身が
               commit 後 全体ビルド + 全体テスト で再検証
 [11]Squash : autosquash 実行 (詳細は「タスク完了時の autosquash」節)
               実行後 全体ビルド + 全体テスト で再検証
+[12]MsgRev : Reviewer dispatch → 全 commit message の妥当性を check
+              📝 各 commit を [OK] / [NG: 修正後 message 全文] で出力
+[13]MsgFix : NG が 1 件でもあれば commit message を修正
+              HEAD のみ → git commit --amend
+              複数 → exec ベースの rebase で一括 amend
+              実行後 全体ビルド + 全体テスト で再検証
               最終 commit log を user に提示
        ↓ 次の TODO タスクへ。リスト枯渇で終了
 ```
@@ -328,13 +334,95 @@ refactor(<scope>): <subject>
 
 ### CLAUDE.md との関係
 
-CLAUDE.md は通常 `git rebase --autosquash` の自動実行を禁じているが、`## History Modification` セクションに**この skill 専用の例外条項**が明記されている (TASK_BASE 厳密特定 + 4 安全条件)。
+CLAUDE.md は通常 `git rebase --autosquash` の自動実行を禁じているが、`## History Modification` セクションに**この skill 専用の例外条項**が明記されている (TASK_BASE 厳密特定 + 4 安全条件)。同じ例外は次節「コミットメッセージのレビューと修正」の rebase / amend にも適用される。
+
+## コミットメッセージのレビューと修正
+
+autosquash が完了したら、Conductor は **Reviewer dispatch で全 commit message の妥当性を check** し、問題があれば修正する。
+
+### 目的
+
+- autosquash 直後は subject だけ整っていて body が雑然 (fixup の生 message が混入) している可能性がある
+- タスク終了時点で「全 commit が独立してレビュー可能 / そのまま PR 説明として通用する」状態を担保する
+- Tidy First 違反 (structural と behavioral 混在) の見逃しを最終チェックする
+
+### Reviewer dispatch (コミットメッセージレビュー用)
+
+```
+タスクで作成した全 commit (TASK_BASE..HEAD) の commit message を review する。
+コードは見ない。`git log $TASK_BASE..HEAD --format='%H%n%s%n%n%b%n---END---'` の出力のみを評価対象とする。
+
+各 commit について以下を check:
+
+1. Subject 形式
+   - Conventional Commit `<type>(<scope>): <subject>`
+   - type は feat / fix / refactor / test / docs / chore のいずれか
+   - 日本語、命令形・体言止め、句点なし、行頭の重複 prefix 除去
+
+2. Body 必須要素 (type 別)
+   - feat / fix : テスト概要 + 設計図 (mermaid) + 追加/変更テスト一覧
+   - refactor   : 改善内容 + 関数シグネチャ before/after
+   - test       : テスト概要
+
+3. Body 内容
+   - 「なぜ」が説明されているか (「何を」だけになっていないか)
+   - fixup の生 message が残っていないか (`fixup! ...` 等)
+
+4. Tidy First 違反疑い
+   - subject から structural と behavioral 混在が疑われたら指摘
+   - 例: `feat: X を追加し関連する古い実装を整理` のように 2 つの責務が混ざっている
+
+各 commit を以下の形式で出力:
+- HASH SUBJECT
+  判定: [OK] または [NG: 理由]
+  修正案: <NG の場合のみ、修正後の commit message **全文** (subject + body) を提示>
+```
+
+### 修正の実行
+
+NG が 1 件でもあれば修正フェーズに入る。autosquash と**同じ安全条件** (TASK_BASE..HEAD が自分の作業のみ・upstream の祖先) が満たされていることを再確認する。
+
+#### Case A: HEAD のみが NG
+
+```bash
+git commit --amend -m "$(cat <<'EOF'
+<修正後 message 全文>
+EOF
+)"
+```
+
+#### Case B: HEAD 以外も含む複数が NG
+
+exec ベースの rebase plan を作成して非対話実行する:
+
+```bash
+TODO_FILE=$(mktemp)
+git log --reverse --format='pick %H %s' $TASK_BASE..HEAD > $TODO_FILE
+
+# 修正対象 commit の直後に `exec git commit --amend` を挿入
+# (Conductor が各修正対象について以下を perl で挿入)
+perl -i -pe 's|^(pick <hash>.*)|$1\nexec git commit --amend -F <msg-file>|' $TODO_FILE
+
+# 非対話実行
+GIT_SEQUENCE_EDITOR="cp $TODO_FILE" git rebase -i $TASK_BASE
+```
+
+`-F <msg-file>` パターンで複数行 message を安全に渡す (シェルエスケープを避ける)。各修正対象ごとに一時ファイルを作る。
+
+### 修正後の検証
+
+- **全体ビルド + 全体テスト** で再検証 — message 編集だが rebase なので念のため必ず実行
+- 失敗時は `git reset --hard ORIG_HEAD` で戻せることを user に伝える
+- `git log --oneline $TASK_BASE..HEAD` と `git log $TASK_BASE..HEAD --format='%h %B' --decorate` の両方を user に提示し、最終状態を確認
 
 ## git 操作の安全規定 (CLAUDE.md 準拠)
 
 - `git add` は Conductor が自分で行う
-- `git commit --amend` / `git rebase` (autosquash 例外を除く) / `git reset --hard` / `git push --force` は**自動実行しない**
-- history を書き換える操作は autosquash の例外条件以外すべて user 確認必須
+- `git commit --amend` / `git rebase` / `git reset --hard` / `git push --force` は**自動実行しない**。例外は次の 2 つに限る:
+  1. **タスク完了時の autosquash** (前述)
+  2. **タスク完了時のコミットメッセージ修正** (前述、HEAD `--amend` または exec ベース rebase)
+  両者とも安全条件 (TASK_BASE..HEAD が自分の作業のみ + upstream 祖先) を満たした場合のみ
+- 上記 2 つ以外の history 書き換え操作はすべて user 確認必須
 - push は user 明示指示時のみ
 
 ## 効率化テクニック
