@@ -136,7 +136,9 @@ if [[ -f "$HOME/.homesick/repos/homeshick/homeshick.sh" ]]; then
   source "$HOME/.homesick/repos/homeshick/homeshick.sh"
 fi
 
-source ~/.just.zsh
+if [[ -f ~/.just.zsh ]]; then
+  source ~/.just.zsh
+fi
 
 if { which "claude" > /dev/null }; then
   export CLAUDE_CONFIG_DIR=$HOME/.claude
