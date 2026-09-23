@@ -36,10 +36,5 @@
             };
           };
         };
-      flake = {
-        homeConfigurations = {
-          fvm = import ./home/.config/home-manager/fvm.nix;
-        };
-      };
     };
 }
