@@ -3,7 +3,6 @@
 {
   home.packages = [
     pkgs.cargo
-    pkgs.claude-code
     pkgs.deno
     pkgs.difftastic
     pkgs.neovim
@@ -12,4 +11,16 @@
     pkgs.rustc
     pkgs.rustfmt
   ];
+
+  programs.claude-code.enable = true;
+
+  programs.jujutsu = {
+    enable = true;
+    settings = {
+      user = {
+        name = "c000";
+        email = "c000@users.noreply.github.com";
+      };
+    };
+  };
 }
