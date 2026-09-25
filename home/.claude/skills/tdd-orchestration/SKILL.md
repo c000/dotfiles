@@ -36,13 +36,15 @@ Conductor は subagent ではない。この skill を読んだ Claude 自身が
 [2] Verify : 全体ビルド + 全体テスト → ビルド成功 AND 仕様テスト群が ≥1 失敗
               全部緑ならテスト不足 → Implementer 再依頼
               ビルド失敗 → build-error-fixer dispatch
+[2.5]CommitRed (必須): test で commit (body に [1] の仕様テスト一覧 + stub 実装方針)
+              commit 後 全体ビルド + 全体テスト で再検証 (Red 状態維持)
 [3] Green  : Implementer dispatch → 仕様テスト群を全て緑にする最小実装
               内部で Baby Steps の inner loop を使ってよい
               📝 設計図 (mermaid sequenceDiagram)
 [4] Verify : 全体テスト → 仕様テスト + 既存テスト 全 green
 [5] Review : Reviewer dispatch (read-only)
               📝 重複/改善指摘 + signature before/after + 追加テスト一覧
-[6] Commit1: feat/fix で commit (body に [1][3][5] の成果物)
+[6] Commit1: feat/fix で commit (Green 実装分のみ。body に [3][5] の成果物 + Red commit hash 参照)
               commit 後 全体ビルド + 全体テスト で再検証
 [7] Refact : Implementer dispatch → Reviewer 指摘のうち適用すべき分のみ反映
               不要ならスキップして [11] へ
@@ -93,7 +95,7 @@ Red phase は古典的「1 テストずつ」ではなく、**タスクの完了
 | **Red phase** [2] | 全体ビルドが通る AND 仕様テスト群が ≥1 失敗 | `cargo build && cargo test` / `npm run build && npm test` / `go build ./... && go test ./...` |
 | **Green phase** [4] | 全体テストが全て通る | `cargo test` / `npm test` / `go test ./...` |
 | **Refactor 後** [8] | 全体テスト依然 green | 同上 |
-| **commit 完了後** [6][10][11] | 再度 全体ビルド + 全体テスト (pre-commit hook が変更を加えている可能性に備える) | 同上 |
+| **commit 完了後** [2.5][6][10][11] | 再度 全体ビルド + 全体テスト (pre-commit hook が変更を加えている可能性に備える)。`[2.5]` は Red 状態維持を確認 (build OK + spec ≥1 fail のまま) | 同上 |
 
 **全体実行を主体とする理由**: 個別実行では予期せぬ regression を見逃す。TDD の安心感は「全テスト緑」状態で担保される。「動いた範囲の確認」ではなく「壊れていないことの確認」を優先。
 
@@ -237,16 +239,37 @@ Reviewer 指摘:
 
 ### commit body のテンプレート
 
-#### `feat:` / `fix:` (Red→Green を含む commit)
+#### `test:` (Red phase commit, `[2.5]` で必須)
+
+````
+test(<scope>): <タスク名> の仕様テスト群を追加
+
+## 仕様テスト一覧
+<Implementer の Red 完了時報告をそのまま転記>
+- testFooReturnsBar: 正常系シナリオ / 期待される振る舞い / 対応する完了条件
+- testFooThrowsOnNull: 異常系シナリオ / 期待される振る舞い / 対応する完了条件
+- testFooBoundary: 境界値シナリオ / 期待される振る舞い / 対応する完了条件
+- (タスクの完了条件として全テストが緑になる必要がある旨を 1 行で明記)
+
+## stub 実装方針
+<Red phase で追加した scaffolding (型定義 / 空関数 / `unimplemented!()` 等) の概要>
+- 追加した型/関数: ...
+- stub の挙動: build を通しつつ test が runtime fail する最小構成 (例: `unimplemented!()` 返却)
+- Green phase で置き換わる箇所: ... (関数名・期待される最終形を 1 行ずつ)
+
+## なぜ今このテストを書くか
+- タスク全体の何を完了条件として定義するか
+- 既存実装/テストとの境界 (touch しない既存 invariant)
+````
+
+#### `feat:` / `fix:` (Green commit, `[6]` で必須)
 
 ````
 <type>(<scope>): <subject>
 
-## テスト概要
-<Implementer の Red 完了時出力をここに>
-- 対象シナリオ: ...
-- 期待される振る舞い: ...
-- なぜ今このテストを書くか: ...
+## 関連 Red commit
+<Red commit の hash と subject を 1 行で>
+例: a1b2c3d test(parser): 空文字列パースの仕様テスト群を追加
 
 ## 設計図
 <Implementer の Green 完了時 mermaid 図をここに>
@@ -258,12 +281,16 @@ sequenceDiagram
 ```
 
 ## 追加/変更テスト
-<Reviewer のテスト一覧出力をここに>
+<Reviewer のテスト一覧出力をここに (Red commit の 仕様テスト群と同じ + Green で追加した補助テスト)>
 - testFooReturnsBar: 正常系で Bar を返す
 - testFooThrowsOnNull: null 入力時に例外を投げる
+
+## Reviewer 指摘 (適用しなかった分)
+- 次の `refactor:` commit に持ち越した分があれば 1 行ずつ列挙
+- なければ「持ち越しなし」と明記
 ````
 
-#### `refactor:` (Refactor フェーズの commit)
+#### `refactor:` (Refactor フェーズの commit, `[10]` で必要時)
 
 ```
 refactor(<scope>): <subject>
@@ -279,11 +306,66 @@ refactor(<scope>): <subject>
 - after:  fn calc(price: Money) -> Money
 ```
 
+#### `refactor:` (Tidy First commit, `[1]` の前で任意)
+
+```
+refactor(<scope>): 後続の追加に備えて <X> を抽出
+
+## 整頓の目的
+- なぜ今この整頓を行うか (後続の Red phase で何が書きやすくなるか)
+- 振る舞いを変えていないことを明示
+
+## 関数シグネチャ変化
+- before: fn old(...)
+- after:  fn extracted(...) + fn old(...)
+```
+
 ### 修正コミット
 
 - 同一サイクル内の小さな修正は `git commit --fixup <hash>` を使う
 - `git commit --amend` は user 明示指示時のみ
 - autosquash は**タスク完了時のみ** Conductor が自動実行 (次節)
+
+### Conductor の編集禁止 (必須)
+
+Conductor は **実装/テスト/設定ファイルを直接 Edit しない**。これは「効率化」ではなく **必須ルール**:
+
+- 1 行の import 追加 / clippy fix / typo / Cargo.toml 1 行追加であっても直接編集せず、必ず subagent に委譲する
+  - 仕様テスト・本実装の追加/修正 → `code-implementation-expert` (Implementer)
+  - build / lint / test 失敗の修復 → `build-error-fixer`
+  - test 失敗の原因分類 → `test-failure-analyzer`
+- 例外として Conductor が直接書き換えてよいファイル:
+  - 計画ファイル / TODO 管理 / メモ
+  - Conductor 自身の skill / plan ファイル
+  - git 操作の結果生成物 (commit message ファイル等)
+- 理由:
+  - commit log 上で「誰が書いたコード」かの一貫性を保つ (project 規約 `code-implementation-expert` MUST)
+  - Implementer/Reviewer の専門 prompt が一貫して適用される
+  - Conductor の context window を温存し長サイクル運用を可能にする
+- 違反した場合の対処: 該当編集を `git checkout HEAD -- <file>` で revert し、subagent に再依頼する
+
+### Red phase の独立 commit (必須)
+
+Red phase で追加した仕様テスト群 + scaffolding (stub 型定義) は、**必ず `test:` で独立 commit** する。Green と統合した `feat:` 単一 commit は禁止。
+
+理由:
+- 仕様テスト群 = タスクの「done の定義」を git history に明示的に残す
+- Red と Green を別々に review / bisect 可能にする
+- 仕様テストそのものが PR レビュー対象として独立した価値を持つ
+- Red commit を base にして Green 実装の妥当性を後から検証可能
+
+手順 (cycle `[2.5]` で実施、`[1]`〜`[2]` 通過後 `[3]` 開始前):
+
+```
+[2.5] CommitRed (必須): test で commit
+       - subject: test(<scope>): <タスク名> の仕様テスト群を追加
+       - body: 後述「test: の body テンプレート」に従う
+       - commit 後 全体ビルド + 全体テスト で再検証 (Red 状態 = build OK + spec ≥1 fail のまま)
+[3] Green 以降は通常どおり進行
+[6] Commit1 (feat:) は Green 実装分のみ。body の「テスト概要」項目は省略し、対応する Red commit hash を「関連 Red commit」項に記載
+[11] autosquash では `test:` commit はそのまま保持 (fixup 対象でない限り squash されない)
+[12] commit message review では `test:` commit も対象に含める
+```
 
 ## タスク完了時の autosquash
 
@@ -329,8 +411,10 @@ refactor(<scope>): <subject>
 
 以下を全て満たせば skip してよい:
 - fixup commit が 1 つもない
-- 通常 commit が 2 つ以下 (`feat` + 任意の `refactor`)
+- 通常 commit が `test` + `feat`/`fix` + 任意の `refactor` (+ 任意の Tidy First `refactor`) の構成のみ
 - 全 commit message が論理単位として完結
+
+`test:` (Red) commit は autosquash で squash しない。`feat:`/`fix:` (Green) commit と独立した論理単位として保持する。
 
 ### CLAUDE.md との関係
 
@@ -359,10 +443,11 @@ autosquash が完了したら、Conductor は **Reviewer dispatch で全 commit 
    - type は feat / fix / refactor / test / docs / chore のいずれか
    - 日本語、命令形・体言止め、句点なし、行頭の重複 prefix 除去
 
-2. Body 必須要素 (type 別)
-   - feat / fix : テスト概要 + 設計図 (mermaid) + 追加/変更テスト一覧
-   - refactor   : 改善内容 + 関数シグネチャ before/after
-   - test       : テスト概要
+2. Body 必須要素 (type 別、`### commit body のテンプレート` 節と一致)
+   - test       : 仕様テスト一覧 + stub 実装方針 + なぜ今このテストを書くか
+   - feat / fix : 関連 Red commit hash + 設計図 (mermaid) + 追加/変更テスト + Reviewer 指摘 (適用しなかった分)
+   - refactor (Refactor フェーズ) : 改善内容 + 関数シグネチャ before/after
+   - refactor (Tidy First) : 整頓の目的 + 関数シグネチャ before/after
 
 3. Body 内容
    - 「なぜ」が説明されているか (「何を」だけになっていないか)

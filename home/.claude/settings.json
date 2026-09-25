@@ -1,4 +1,8 @@
 {
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(rg:*)",
@@ -17,8 +21,14 @@
       "Bash(runn:*)",
       "Bash(docker compose logs:*)",
       "Bash(docker logs:*)",
-      "mcp__context7__resolve-library-id",
-      "mcp__context7__get-library-docs"
+      "Bash(grpcurl:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(buf generate:*)",
+      "WebSearch",
+      "Bash(cargo:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
     ],
     "deny": [
       "Bash(git push:*)",
@@ -44,7 +54,8 @@
       "Bash(rm -rf $HOME:*)",
       "Bash(rm -rf ~/.ssh*)",
       "Bash(rm -rf ~/.config*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "hooks": {
     "Notification": [
@@ -74,5 +85,36 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
-  "alwaysThinkingEnabled": true
+  "enabledPlugins": {
+    "probitas@probitas-test": true,
+    "document-skills@anthropic-agent-skills": true,
+    "example-skills@anthropic-agent-skills": true,
+    "yomiyasu@yomiyasu": true
+  },
+  "extraKnownMarketplaces": {
+    "attmcojp": {
+      "source": {
+        "source": "github",
+        "repo": "attmcojp/claude-plugins"
+      }
+    },
+    "yomiyasu": {
+      "source": {
+        "source": "github",
+        "repo": "nanaism/yomiyasu"
+      }
+    }
+  },
+  "outputStyle": "Concise",
+  "effortLevel": "xhigh",
+  "advisorModel": "fable",
+  "tui": "default",
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "preferredNotifChannel": "terminal_bell",
+  "autoCompactEnabled": true,
+  "fileCheckpointingEnabled": false,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
 }

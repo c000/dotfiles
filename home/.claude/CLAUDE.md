@@ -1,3 +1,7 @@
+# Output Style
+
+- **PREFER**: ASCII art / 図でツリー・フロー・階層を可視化してから説明する (例: ディレクトリ構造、データフロー、状態遷移)
+
 # Code Implementation
 
 ## Agent Usage
@@ -62,67 +66,6 @@
 - **NEVER**: Automatically run `git rebase --autosquash` - only create the fixup commit
 - **When to use `--amend`**: Only when explicitly requested by the user
 
-# Rust Development
-
-## Module Structure
-- **CRITICAL**: ABSOLUTELY NEVER create `mod.rs` files anywhere
-- **MUST**: Always use named module files (e.g., `domain.rs` NOT `domain/mod.rs`)
-
-### ❌ Wrong
-```
-src/
-├── domain/
-│   └── mod.rs          ❌ NEVER do this
-├── handlers/
-│   └── mod.rs          ❌ NEVER do this
-└── services/
-    └── user/
-        └── mod.rs      ❌ NEVER do this
-```
-
-### ✅ Correct
-```
-src/
-├── domain.rs           ✅ Use this
-├── handlers.rs         ✅ Use this
-└── services/
-    └── user.rs         ✅ Use this
-```
-
-## Testing
-- When creating tests, start small and keep them working, then gradually add more functionality
-
-### Test Patterns to Avoid
-
-1. **Self-referential mapping validation tests**
-   - ❌ Bad example:
-     ```rust
-     // Testing your own JSON mapping definition against itself
-     fn test_index_mapping_contains_all_fields() {
-         let mapping = MyDocument::index_mapping();
-         assert!(mapping.get("properties").unwrap().contains_key("fieldName"));
-     }
-     ```
-   - Reason: This just duplicates the implementation without verifying actual behavior
-   - ✅ Better alternatives:
-     - Integration tests that apply mappings to real Elasticsearch
-     - Tests that verify document conversion works correctly
-
-2. **Internal structure verification based on implementation details**
-   - Don't test detailed JSON structure; instead verify actual behavior (Elasticsearch operations, search, indexing)
-
-### Recommended Test Patterns
-
-1. **Integration tests**: Test against real external systems (Elasticsearch, etc.)
-2. **Conversion tests**: Verify Entity → DTO → Entity roundtrips work correctly
-3. **Boundary tests**: Test edge cases and special conditions
-4. **Behavior tests**: Verify system behavior, not implementation details
-
-## Feature Flags
-- When adding `testutil` feature, ensure dependency consistency
-- Example: When adding `testutil` to `duo_personal_information`, also add `testutil` to its dependency `shared`
-- Ensure feature flags are consistent across the entire dependency chain
-
 # Command Line Tools
 
 ## File Reading
@@ -140,16 +83,6 @@ src/
   - ✅ `perl -pi -e 's/old/new/g' file.txt`
 
 # Database Development
-
-## SQLx Prepare
-- **MUST**: Run `sqlx prepare` after any SQL-related changes to update `.sqlx` files
-- **When to run**: 
-  - After adding new SQL queries
-  - After modifying existing SQL queries
-  - After changing database schema (migrations)
-  - Before committing any database-related changes
-- **Command**: `cargo sqlx prepare` (from the Rust project directory)
-- **Purpose**: Generates compile-time verified query metadata for offline compilation
 
 ## Elasticsearch Access
 - **Protocol**: HTTP (not HTTPS)

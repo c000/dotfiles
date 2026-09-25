@@ -15,5 +15,6 @@ description: Create a pull request
 1. Determine the base branch: use $ARGUMENTS if provided, otherwise use origin/main
 2. Check the diff from the base branch: `git diff <base-branch>...HEAD`
 3. Review commits since branching from the base branch: `git log <base-branch>..HEAD`
-4. Then change branch name if needed
-5. Then create a pull request (PR) with the appropriate title and description against the base branch
+4. Verify the current branch is already pushed to remote: `git branch -vv` to check tracking status. If not pushed, inform the user and ask whether to push first
+5. Then change branch name if needed
+6. Then create a pull request (PR) with the appropriate title and description against the base branch

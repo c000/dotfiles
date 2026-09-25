@@ -1,4 +1,4 @@
-Create a new git branch based on the task description.
+  * [ ] Create a new git branch based on the task description.
 
 Task/Purpose: $ARGUMENTS
 
